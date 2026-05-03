@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fortune Ramafemo — Cybersecurity Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050810;
+    --surface: #0b1120;
+    --surface2: #111827;
+    --border: #1e2d45;
+    --accent: #00d4ff;
+    --accent2: #7c3aed;
+    --accent3: #10b981;
+    --text: #e2e8f0;
+    --text-dim: #64748b;
+    --text-bright: #f8fafc;
+    --glow: rgba(0,212,255,0.15);
+    --glow2: rgba(124,58,237,0.15);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    position: fixed;
+    width: 12px; height: 12px;
+    background: var(--accent);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%,-50%);
+    transition: transform 0.1s, width 0.2s, height 0.2s, background 0.2s;
+    mix-blend-mode: screen;
+  }
+  .cursor-ring {
+    position: fixed;
+    width: 36px; height: 36px;
+    border: 1px solid var(--accent);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%,-50%);
+    transition: transform 0.15s ease-out, width 0.2s, height 0.2s, opacity 0.2s;
+    opacity: 0.5;
+  }
+
+  /* Canvas BG */
+  #bg-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  /* Layout */
+  .wrapper { position: relative; z-index: 1; }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 4rem;
+    background: rgba(5,8,16,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+  }
+  .nav-logo span { color: var(--text-dim); }
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+  .nav-links a {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    text-decoration: none;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+    position: relative;
+  }
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -4px; left: 0; right: 0;
+    height: 1px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transition: transform 0.2s;
+    transform-origin: left;
+  }
+  .nav-links a:hover { color: var(--accent); }
+  .nav-links a:hover::after { transform: scaleX(1); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 8rem 4rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-content { max-width: 700px; }
+  .hero-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .hero-tag::before {
+    content: '';
+    width: 32px; height: 1px;
+    background: var(--accent);
+  }
+  .hero-name {
+    font-size: clamp(3rem, 8vw, 6.5rem);
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    color: var(--text-bright);
+    margin-bottom: 0.5rem;
+  }
+  .hero-name .highlight {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero-title {
+    font-size: clamp(1rem, 2.5vw, 1.35rem);
+    color: var(--text-dim);
+    margin-bottom: 2rem;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+  }
+  .hero-desc {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    line-height: 1.8;
+    max-width: 520px;
+    margin-bottom: 3rem;
+    border-left: 2px solid var(--accent);
+    padding-left: 1.25rem;
+  }
+  .hero-cta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.85rem 2rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: all 0.25s;
+    cursor: none;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--bg);
+    font-weight: 700;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: rgba(255,255,255,0.15);
+    transition: left 0.3s;
+  }
+  .btn-primary:hover::before { left: 100%; }
+  .btn-primary:hover { box-shadow: 0 0 30px rgba(0,212,255,0.4); }
+  .btn-outline {
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+  }
+  .btn-outline:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: inset 0 0 20px var(--glow);
+  }
+
+  .hero-visual {
+    position: absolute;
+    right: -50px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 500px; height: 500px;
+    opacity: 0.6;
+  }
+
+  /* Stats bar */
+  .stats-bar {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 2rem 4rem;
+    display: flex;
+    gap: 4rem;
+    overflow-x: auto;
+  }
+  .stat {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .stat-val {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .stat-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .stat-divider {
+    width: 1px;
+    background: var(--border);
+    align-self: stretch;
+  }
+
+  /* Sections */
+  section {
+    padding: 6rem 4rem;
+    position: relative;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 3.5rem;
+  }
+  .section-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+  }
+  .section-title {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--text-bright);
+    letter-spacing: -0.02em;
+  }
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+    max-width: 300px;
+  }
+
+  /* About */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: start;
+  }
+  .about-text p {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.82rem;
+    line-height: 1.9;
+    color: var(--text-dim);
+    margin-bottom: 1.25rem;
+  }
+  .about-text p strong { color: var(--accent); font-weight: 700; }
+  .about-details {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+  .detail-row {
+    display: flex;
+    background: var(--surface);
+    transition: background 0.2s;
+  }
+  .detail-row:hover { background: var(--surface2); }
+  .detail-key {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.9rem 1.25rem;
+    width: 140px;
+    flex-shrink: 0;
+    border-right: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+  }
+  .detail-val {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--text);
+    padding: 0.9rem 1.25rem;
+    display: flex;
+    align-items: center;
+  }
+  .detail-val a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .detail-val a:hover { text-decoration: underline; }
+
+  /* Skills */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+  .skill-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1.75rem;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.25s, transform 0.25s;
+    cursor: none;
+  }
+  .skill-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s;
+  }
+  .skill-card:hover::before { transform: scaleX(1); }
+  .skill-card:hover {
+    border-color: rgba(0,212,255,0.3);
+    transform: translateY(-4px);
+  }
+  .skill-icon {
+    width: 40px; height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--glow);
+    border: 1px solid rgba(0,212,255,0.2);
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+  }
+  .skill-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-bright);
+    margin-bottom: 0.5rem;
+  }
+  .skill-desc {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    line-height: 1.7;
+  }
+  .skill-bar-wrap {
+    margin-top: 1.25rem;
+    background: var(--bg);
+    height: 3px;
+    position: relative;
+    overflow: hidden;
+  }
+  .skill-bar {
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    width: 0;
+    transition: width 1.2s cubic-bezier(0.22,1,0.36,1);
+  }
+
+  /* Certifications */
+  .certs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1.5rem;
+  }
+  .cert-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+    cursor: none;
+  }
+  .cert-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 0%, var(--glow), transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .cert-card:hover::after { opacity: 1; }
+  .cert-card:hover {
+    border-color: rgba(0,212,255,0.35);
+    transform: translateY(-3px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  }
+  .cert-issuer {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .cert-issuer::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+  .cert-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-bright);
+    line-height: 1.35;
+    margin-bottom: 1rem;
+  }
+  .cert-desc {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--text-dim);
+    line-height: 1.7;
+    margin-bottom: 1.25rem;
+  }
+  .cert-meta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .cert-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    padding: 0.3rem 0.75rem;
+    text-transform: uppercase;
+  }
+  .cert-badge-date {
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+  }
+  .cert-badge-active {
+    background: rgba(16,185,129,0.1);
+    border: 1px solid rgba(16,185,129,0.3);
+    color: var(--accent3);
+  }
+  .cert-badge-verified {
+    background: var(--glow);
+    border: 1px solid rgba(0,212,255,0.25);
+    color: var(--accent);
+  }
+  .cert-skills {
+    margin-top: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .cert-skill-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.58rem;
+    padding: 0.2rem 0.55rem;
+    background: rgba(124,58,237,0.1);
+    border: 1px solid rgba(124,58,237,0.2);
+    color: #a78bfa;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .cert-corner {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    font-size: 1.5rem;
+    opacity: 0.25;
+  }
+
+  /* Timeline */
+  .timeline {
+    position: relative;
+    padding-left: 2rem;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 1px;
+    background: linear-gradient(180deg, var(--accent), var(--accent2), transparent);
+  }
+  .timeline-item {
+    position: relative;
+    padding-left: 2.5rem;
+    padding-bottom: 3rem;
+  }
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -2rem;
+    top: 0.35rem;
+    width: 10px; height: 10px;
+    background: var(--bg);
+    border: 2px solid var(--accent);
+    border-radius: 50%;
+    transform: translateX(-4px);
+    transition: background 0.2s;
+  }
+  .timeline-item:hover::before { background: var(--accent); }
+  .timeline-date {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    margin-bottom: 0.5rem;
+  }
+  .timeline-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-bright);
+    margin-bottom: 0.4rem;
+  }
+  .timeline-org {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    margin-bottom: 0.75rem;
+  }
+  .timeline-body {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    line-height: 1.75;
+  }
+
+  /* Contact */
+  .contact-section {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+  }
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: center;
+  }
+  .contact-left h2 {
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--text-bright);
+    line-height: 1.1;
+    margin-bottom: 1.25rem;
+  }
+  .contact-left h2 span {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .contact-left p {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    line-height: 1.8;
+    margin-bottom: 2rem;
+  }
+  .contact-links {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+  .contact-link-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: var(--surface2);
+    text-decoration: none;
+    color: var(--text);
+    transition: background 0.2s, color 0.2s;
+    cursor: none;
+  }
+  .contact-link-row:hover {
+    background: var(--glow);
+    color: var(--accent);
+  }
+  .contact-link-icon {
+    font-size: 1rem;
+    width: 20px;
+    text-align: center;
+  }
+  .contact-link-text {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    flex: 1;
+  }
+  .contact-link-arrow {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    transition: transform 0.2s, color 0.2s;
+  }
+  .contact-link-row:hover .contact-link-arrow {
+    transform: translateX(4px);
+    color: var(--accent);
+  }
+
+  /* Terminal widget */
+  .terminal {
+    background: #020408;
+    border: 1px solid var(--border);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    overflow: hidden;
+  }
+  .terminal-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: #0a0e17;
+    border-bottom: 1px solid var(--border);
+  }
+  .t-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+  }
+  .t-dot-r { background: #ff5f57; }
+  .t-dot-y { background: #ffbd2e; }
+  .t-dot-g { background: #28ca42; }
+  .terminal-title {
+    color: var(--text-dim);
+    font-size: 0.65rem;
+    margin-left: 0.5rem;
+    letter-spacing: 0.05em;
+  }
+  .terminal-body {
+    padding: 1.5rem;
+    line-height: 2;
+    color: var(--text-dim);
+    min-height: 280px;
+  }
+  .t-line { display: block; }
+  .t-prompt { color: var(--accent3); }
+  .t-cmd { color: var(--text); }
+  .t-out { color: var(--text-dim); }
+  .t-key { color: var(--accent); }
+  .t-val { color: #a78bfa; }
+  .t-cursor {
+    display: inline-block;
+    width: 7px; height: 1em;
+    background: var(--accent);
+    vertical-align: text-bottom;
+    animation: blink 1s step-end infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+  /* Footer */
+  footer {
+    padding: 2rem 4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--border);
+  }
+  footer p {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+  }
+  footer span { color: var(--accent); }
+
+  /* Animations */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1);
+  }
+  .fade-up.visible { opacity: 1; transform: translateY(0); }
+  .fade-up:nth-child(2) { transition-delay: 0.1s; }
+  .fade-up:nth-child(3) { transition-delay: 0.2s; }
+  .fade-up:nth-child(4) { transition-delay: 0.3s; }
+  .fade-up:nth-child(5) { transition-delay: 0.4s; }
+
+  /* Noise overlay */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: 0.03;
+  }
+
+  @media (max-width: 900px) {
+    nav { padding: 1.25rem 1.5rem; }
+    .nav-links { gap: 1.5rem; }
+    .hero { padding: 7rem 1.5rem 3rem; }
+    section { padding: 4rem 1.5rem; }
+    .hero-visual { display: none; }
+    .about-grid, .contact-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+    .stats-bar { padding: 1.5rem; gap: 2rem; }
+    footer { padding: 1.5rem; flex-direction: column; gap: 0.75rem; text-align: center; }
+  }
+
+  @media (max-width: 600px) {
+    .nav-links { display: none; }
+    .hero-name { font-size: 2.8rem; }
+    .certs-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+
+<div class="wrapper">
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo"><span>./</span>fortune-ramafemo</div>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#certifications">Certs</a></li>
+      <li><a href="#journey">Journey</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-tag">Cybersecurity Professional</div>
+      <h1 class="hero-name">
+        <span class="highlight">Fortune</span><br>Ramafemo
+      </h1>
+      <p class="hero-title">Junior Cybersecurity Analyst &amp; Network Security Specialist</p>
+      <p class="hero-desc">
+        Dedicated to protecting digital infrastructure through proactive threat analysis,
+        vulnerability assessment, and incident response planning. Cisco-certified with
+        hands-on expertise in endpoint security and critical infrastructure protection.
+      </p>
+      <div class="hero-cta">
+        <a href="#certifications" class="btn btn-primary">View Certifications →</a>
+        <a href="#contact" class="btn btn-outline">Get In Touch</a>
+      </div>
+    </div>
+    <svg class="hero-visual" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="200" cy="200" r="150" stroke="rgba(0,212,255,0.15)" stroke-width="1"/>
+      <circle cx="200" cy="200" r="120" stroke="rgba(0,212,255,0.1)" stroke-width="1" stroke-dasharray="8 4"/>
+      <circle cx="200" cy="200" r="90" stroke="rgba(124,58,237,0.12)" stroke-width="1"/>
+      <circle cx="200" cy="200" r="60" stroke="rgba(0,212,255,0.08)" stroke-width="1" stroke-dasharray="4 8"/>
+      <circle cx="200" cy="200" r="30" stroke="rgba(0,212,255,0.2)" stroke-width="1.5"/>
+      <circle cx="200" cy="200" r="8" fill="rgba(0,212,255,0.6)"/>
+      <!-- orbit dots -->
+      <circle cx="200" cy="50" r="5" fill="rgba(0,212,255,0.5)"/>
+      <circle cx="350" cy="200" r="4" fill="rgba(124,58,237,0.5)"/>
+      <circle cx="80" cy="280" r="5" fill="rgba(0,212,255,0.35)"/>
+      <circle cx="290" cy="110" r="3.5" fill="rgba(16,185,129,0.5)"/>
+      <!-- connecting lines -->
+      <line x1="200" y1="50" x2="200" y2="170" stroke="rgba(0,212,255,0.15)" stroke-width="1"/>
+      <line x1="350" y1="200" x2="230" y2="200" stroke="rgba(124,58,237,0.15)" stroke-width="1"/>
+      <line x1="80" y1="280" x2="168" y2="218" stroke="rgba(0,212,255,0.12)" stroke-width="1"/>
+    </svg>
+  </section>
+
+  <!-- STATS -->
+  <div class="stats-bar">
+    <div class="stat">
+      <span class="stat-val" data-count="5">5</span>
+      <span class="stat-label">Certifications Earned</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <span class="stat-val" data-count="3">3</span>
+      <span class="stat-label">Cisco Courses</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <span class="stat-val" data-count="2025">2025</span>
+      <span class="stat-label">Career Start Year</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <span class="stat-val">∞</span>
+      <span class="stat-label">Learning Mindset</span>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="section-header">
+      <span class="section-num">01 /</span>
+      <h2 class="section-title">About Me</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="about-grid">
+      <div class="about-text">
+        <p>I'm <strong>Fortune Ramafemo</strong>, a cybersecurity enthusiast focused on building resilient digital defences. Born on 15 February 2002, I've been on an accelerated learning path — earning five cybersecurity certifications within my first year of professional development.</p>
+        <p>My foundation spans <strong>network security</strong>, <strong>endpoint protection</strong>, and <strong>critical infrastructure defence</strong>. I understand that modern threats require layered, proactive strategies — not reactive patchwork.</p>
+        <p>I'm passionate about keeping systems safe, understanding adversary tactics, and helping organisations build lasting security postures. Every certificate I've earned reflects not just knowledge — but a commitment to excellence in a field where precision matters.</p>
+      </div>
+      <div class="about-details">
+        <div class="detail-row">
+          <span class="detail-key">Name</span>
+          <span class="detail-val">Fortune Ramafemo</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-key">Email</span>
+          <span class="detail-val"><a href="mailto:fortuneramafemo2.0@gmail.com">fortuneramafemo2.0@gmail.com</a></span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-key">DOB</span>
+          <span class="detail-val">15 February 2002</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-key">Credly</span>
+          <span class="detail-val"><a href="https://www.credly.com/users/fortune-ramafemo" target="_blank">credly.com/users/fortune-ramafemo</a></span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-key">Status</span>
+          <span class="detail-val" style="color: var(--accent3);">● Available for Opportunities</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-key">Focus</span>
+          <span class="detail-val">Network Security · Threat Analysis</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills" style="background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+    <div class="section-header">
+      <span class="section-num">02 /</span>
+      <h2 class="section-title">Core Skills</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="skills-grid">
+      <div class="skill-card fade-up">
+        <div class="skill-icon">🛡️</div>
+        <div class="skill-name">Network Security</div>
+        <div class="skill-desc">Recommending and implementing cybersecurity controls to mitigate threats. Proficient with firewalls, cloud security, and cryptographic protocols.</div>
+        <div class="skill-bar-wrap"><div class="skill-bar" data-width="88"></div></div>
+      </div>
+      <div class="skill-card fade-up">
+        <div class="skill-icon">🔍</div>
+        <div class="skill-name">Vulnerability Assessment</div>
+        <div class="skill-desc">Evaluating organisational security posture using industry-standard vulnerability and risk assessment tools. Building risk management plans.</div>
+        <div class="skill-bar-wrap"><div class="skill-bar" data-width="82"></div></div>
+      </div>
+      <div class="skill-card fade-up">
+        <div class="skill-icon">🚨</div>
+        <div class="skill-name">Incident Response</div>
+        <div class="skill-desc">Designing and recommending incident management activities. Knowledge of forensic investigation procedures and IR planning.</div>
+        <div class="skill-bar-wrap"><div class="skill-bar" data-width="78"></div></div>
+      </div>
+      <div class="skill-card fade-up">
+        <div class="skill-icon">💻</div>
+        <div class="skill-name">Endpoint Security</div>
+        <div class="skill-desc">Documenting threat mitigation measures, configuring simulated networks, and analysing malware extracted from packet captures.</div>
+        <div class="skill-bar-wrap"><div class="skill-bar" data-width="80"></div></div>
+      </div>
+      <div class="skill-card fade-up">
+        <div class="skill-icon">🌐</div>
+        <div class="skill-name">Networking Fundamentals</div>
+        <div class="skill-desc">Deep understanding of IP addressing (IPv4/IPv6), routing, Ethernet standards, and network communication protocols.</div>
+        <div class="skill-bar-wrap"><div class="skill-bar" data-width="85"></div></div>
+      </div>
+      <div class="skill-card fade-up">
+        <div class="skill-icon">🏭</div>
+        <div class="skill-name">Critical Infrastructure</div>
+        <div class="skill-desc">Foundational knowledge in Critical Infrastructure Protection (CIP) concepts and the OPSWAT Academy framework for OT/IT security.</div>
+        <div class="skill-bar-wrap"><div class="skill-bar" data-width="72"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CERTIFICATIONS -->
+  <section id="certifications">
+    <div class="section-header">
+      <span class="section-num">03 /</span>
+      <h2 class="section-title">Certifications</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="certs-grid">
+
+      <div class="cert-card fade-up">
+        <span class="cert-corner">🏆</span>
+        <div class="cert-issuer">Cisco Networking Academy</div>
+        <div class="cert-name">Junior Cybersecurity Analyst Career Path</div>
+        <div class="cert-desc">Techniques to monitor and protect networks including firewalls, cloud security, and cryptography. Skills to perform network vulnerability assessment and create a risk management plan, including forensic investigations and incident response planning.</div>
+        <div class="cert-meta">
+          <span class="cert-badge cert-badge-date">Issued: May 21, 2025</span>
+          <span class="cert-badge cert-badge-verified">✓ Verified</span>
+        </div>
+        <div class="cert-skills">
+          <span class="cert-skill-tag">Firewalls</span>
+          <span class="cert-skill-tag">Cloud Security</span>
+          <span class="cert-skill-tag">Cryptography</span>
+          <span class="cert-skill-tag">Forensics</span>
+          <span class="cert-skill-tag">IR Planning</span>
+        </div>
+      </div>
+
+      <div class="cert-card fade-up">
+        <span class="cert-corner">🔐</span>
+        <div class="cert-issuer">Cisco Networking Academy</div>
+        <div class="cert-name">Endpoint Security</div>
+        <div class="cert-desc">Broad understanding of network security concepts, operating systems, and endpoint protection strategies. Covers threat mitigation documentation and malware analysis from packet captures in simulated environments.</div>
+        <div class="cert-meta">
+          <span class="cert-badge cert-badge-date">Issued: Jun 5, 2025</span>
+          <span class="cert-badge cert-badge-verified">✓ Verified</span>
+        </div>
+        <div class="cert-skills">
+          <span class="cert-skill-tag">Malware Analysis</span>
+          <span class="cert-skill-tag">OS Security</span>
+          <span class="cert-skill-tag">Threat Mitigation</span>
+          <span class="cert-skill-tag">Packet Capture</span>
+        </div>
+      </div>
+
+      <div class="cert-card fade-up">
+        <span class="cert-corner">🏭</span>
+        <div class="cert-issuer">OPSWAT Academy</div>
+        <div class="cert-name">Introduction to Critical Infrastructure Protection (ICIP)</div>
+        <div class="cert-desc">Fundamental critical infrastructure protection concepts covering the definition of CIP, critical network identification, and the OPSWAT Academy certification framework for OT/IT convergence security.</div>
+        <div class="cert-meta">
+          <span class="cert-badge cert-badge-date">Issued: Jun 5, 2025</span>
+          <span class="cert-badge cert-badge-active">● Active until Jun 2026</span>
+        </div>
+        <div class="cert-skills">
+          <span class="cert-skill-tag">CIP</span>
+          <span class="cert-skill-tag">OT Security</span>
+          <span class="cert-skill-tag">Critical Networks</span>
+          <span class="cert-skill-tag">OPSWAT</span>
+        </div>
+      </div>
+
+      <div class="cert-card fade-up">
+        <span class="cert-corner">🌐</span>
+        <div class="cert-issuer">Cisco Networking Academy</div>
+        <div class="cert-name">Networking Basics</div>
+        <div class="cert-desc">Comprehensive knowledge of network types, communication standards, IP addressing (IPv4 &amp; IPv6), router functionality, wireless configuration, and practical network troubleshooting. Completed up to 13 Cisco Packet Tracer activities.</div>
+        <div class="cert-meta">
+          <span class="cert-badge cert-badge-date">Issued: May 21, 2025</span>
+          <span class="cert-badge cert-badge-verified">✓ Verified</span>
+        </div>
+        <div class="cert-skills">
+          <span class="cert-skill-tag">IPv4 / IPv6</span>
+          <span class="cert-skill-tag">Routing</span>
+          <span class="cert-skill-tag">Packet Tracer</span>
+          <span class="cert-skill-tag">Wireless</span>
+        </div>
+      </div>
+
+      <div class="cert-card fade-up">
+        <span class="cert-corner">🎯</span>
+        <div class="cert-issuer">Cisco Networking Academy</div>
+        <div class="cert-name">Introduction to Cybersecurity</div>
+        <div class="cert-desc">Foundational knowledge of cybersecurity including global cyber threat implications, vulnerability detection, personal and organisational protection strategies, and an overview of cybersecurity career pathways.</div>
+        <div class="cert-meta">
+          <span class="cert-badge cert-badge-date">Issued: Mar 8, 2025</span>
+          <span class="cert-badge cert-badge-verified">✓ Verified</span>
+        </div>
+        <div class="cert-skills">
+          <span class="cert-skill-tag">Threat Detection</span>
+          <span class="cert-skill-tag">Cyber Hygiene</span>
+          <span class="cert-skill-tag">Vulnerabilities</span>
+          <span class="cert-skill-tag">Defense</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- JOURNEY -->
+  <section id="journey" style="background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+    <div class="section-header">
+      <span class="section-num">04 /</span>
+      <h2 class="section-title">My Journey</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="timeline">
+      <div class="timeline-item fade-up">
+        <div class="timeline-date">MARCH 2025</div>
+        <div class="timeline-title">Cisco — Introduction to Cybersecurity</div>
+        <div class="timeline-org">Cisco Networking Academy · Verified Badge</div>
+        <div class="timeline-body">Earned my first cybersecurity credential, establishing a strong foundation in cyber threat awareness, vulnerability types, and organisational protection strategies. This marked the formal beginning of my cybersecurity career path.</div>
+      </div>
+      <div class="timeline-item fade-up">
+        <div class="timeline-date">MAY 2025</div>
+        <div class="timeline-title">Cisco — Junior Cybersecurity Analyst Career Path</div>
+        <div class="timeline-org">Cisco Networking Academy · Verified Badge</div>
+        <div class="timeline-body">Completed the full Junior Cybersecurity Analyst Career Path — covering network monitoring, firewall configuration, cloud security, cryptography, forensic investigation, and comprehensive incident response planning.</div>
+      </div>
+      <div class="timeline-item fade-up">
+        <div class="timeline-date">MAY 2025</div>
+        <div class="timeline-title">Cisco — Networking Basics</div>
+        <div class="timeline-org">Cisco Networking Academy · Verified Badge</div>
+        <div class="timeline-body">Deepened my understanding of network infrastructure fundamentals — from IP addressing and routing to wireless security and 13 Cisco Packet Tracer practical simulation activities.</div>
+      </div>
+      <div class="timeline-item fade-up">
+        <div class="timeline-date">JUNE 2025</div>
+        <div class="timeline-title">Cisco — Endpoint Security</div>
+        <div class="timeline-org">Cisco Networking Academy · Verified Badge</div>
+        <div class="timeline-body">Advanced my expertise in endpoint protection: threat documentation, malware analysis from packet captures, simulated network configuration, and OS-level security hardening.</div>
+      </div>
+      <div class="timeline-item fade-up">
+        <div class="timeline-date">JUNE 2025</div>
+        <div class="timeline-title">OPSWAT — Introduction to Critical Infrastructure Protection (ICIP)</div>
+        <div class="timeline-org">OPSWAT Academy · Active Certification (Valid until Jun 2026)</div>
+        <div class="timeline-body">Entered the specialised domain of Operational Technology (OT) security and Critical Infrastructure Protection — one of cybersecurity's most critical and rapidly growing fields.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="contact-section">
+    <div class="section-header">
+      <span class="section-num">05 /</span>
+      <h2 class="section-title">Contact</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="contact-grid">
+      <div class="contact-left">
+        <h2>Let's build something <span>secure</span> together.</h2>
+        <p>I'm actively seeking opportunities in cybersecurity — whether junior analyst roles, internships, or collaborative projects. If you're looking for a motivated, certified professional who brings both technical rigour and genuine passion for security, let's connect.</p>
+        <a href="mailto:fortuneramafemo2.0@gmail.com" class="btn btn-primary">Send a Message →</a>
+      </div>
+      <div>
+        <div class="contact-links">
+          <a href="mailto:fortuneramafemo2.0@gmail.com" class="contact-link-row">
+            <span class="contact-link-icon">✉</span>
+            <span class="contact-link-text">fortuneramafemo2.0@gmail.com</span>
+            <span class="contact-link-arrow">→</span>
+          </a>
+          <a href="https://www.credly.com/users/fortune-ramafemo" target="_blank" class="contact-link-row">
+            <span class="contact-link-icon">🏅</span>
+            <span class="contact-link-text">credly.com/users/fortune-ramafemo</span>
+            <span class="contact-link-arrow">→</span>
+          </a>
+        </div>
+
+        <div class="terminal" style="margin-top: 1.5rem;">
+          <div class="terminal-bar">
+            <div class="t-dot t-dot-r"></div>
+            <div class="t-dot t-dot-y"></div>
+            <div class="t-dot t-dot-g"></div>
+            <span class="terminal-title">fortune@portfolio:~</span>
+          </div>
+          <div class="terminal-body">
+            <span class="t-line"><span class="t-prompt">fortune@portfolio</span>:~$ <span class="t-cmd">whoami</span></span>
+            <span class="t-line"><span class="t-out">Fortune Ramafemo — Cybersecurity Analyst</span></span>
+            <span class="t-line"> </span>
+            <span class="t-line"><span class="t-prompt">fortune@portfolio</span>:~$ <span class="t-cmd">cat skills.json</span></span>
+            <span class="t-line"><span class="t-out">{</span></span>
+            <span class="t-line"><span class="t-out">&nbsp;&nbsp;<span class="t-key">"certs"</span>: <span class="t-val">5</span>,</span></span>
+            <span class="t-line"><span class="t-out">&nbsp;&nbsp;<span class="t-key">"focus"</span>: <span class="t-val">"network + endpoint security"</span>,</span></span>
+            <span class="t-line"><span class="t-out">&nbsp;&nbsp;<span class="t-key">"available"</span>: <span class="t-val">true</span></span></span>
+            <span class="t-line"><span class="t-out">}</span></span>
+            <span class="t-line"> </span>
+            <span class="t-line"><span class="t-prompt">fortune@portfolio</span>:~$ <span class="t-cursor"></span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2026 <span>Fortune Ramafemo</span> — All rights reserved.</p>
+    <p>Built with precision · Certified with purpose · <span>Secured by design</span></p>
+  </footer>
+
+</div>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const cursorRing = document.getElementById('cursor-ring');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx + 'px';
+    cursor.style.top = my + 'px';
+  });
+  function animRing() {
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    cursorRing.style.left = rx + 'px';
+    cursorRing.style.top = ry + 'px';
+    requestAnimationFrame(animRing);
+  }
+  animRing();
+  document.querySelectorAll('a, button, .skill-card, .cert-card').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.style.width = '20px'; cursor.style.height = '20px';
+      cursorRing.style.width = '50px'; cursorRing.style.height = '50px';
+      cursorRing.style.opacity = '0.8';
+    });
+    el.addEventListener('mouseleave', () => {
+      cursor.style.width = '12px'; cursor.style.height = '12px';
+      cursorRing.style.width = '36px'; cursorRing.style.height = '36px';
+      cursorRing.style.opacity = '0.5';
+    });
+  });
+
+  // Canvas background - particle network
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [];
+
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  class Particle {
+    constructor() { this.reset(); }
+    reset() {
+      this.x = Math.random() * W;
+      this.y = Math.random() * H;
+      this.vx = (Math.random() - 0.5) * 0.3;
+      this.vy = (Math.random() - 0.5) * 0.3;
+      this.r = Math.random() * 1.5 + 0.5;
+      this.opacity = Math.random() * 0.5 + 0.1;
+    }
+    update() {
+      this.x += this.vx; this.y += this.vy;
+      if (this.x < 0 || this.x > W || this.y < 0 || this.y > H) this.reset();
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(0,212,255,${this.opacity})`;
+      ctx.fill();
+    }
+  }
+
+  for (let i = 0; i < 80; i++) particles.push(new Particle());
+
+  function drawConnections() {
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 120) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(0,212,255,${0.08 * (1 - dist/120)})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+  function animateCanvas() {
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => { p.update(); p.draw(); });
+    drawConnections();
+    requestAnimationFrame(animateCanvas);
+  }
+  animateCanvas();
+
+  // Intersection observer for fade-up
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        // Animate skill bars
+        const bar = e.target.querySelector('.skill-bar');
+        if (bar) {
+          const w = bar.dataset.width;
+          setTimeout(() => { bar.style.width = w + '%'; }, 100);
+        }
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+  // Also trigger skill bars on scroll past section
+  const skillObserver = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.querySelectorAll('.skill-bar').forEach(bar => {
+          setTimeout(() => { bar.style.width = bar.dataset.width + '%'; }, 200);
+        });
+      }
+    });
+  }, { threshold: 0.2 });
+  const skillsSection = document.getElementById('skills');
+  if (skillsSection) skillObserver.observe(skillsSection);
+
+  // Smooth nav active state
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 200) current = s.id;
+    });
+    navLinks.forEach(a => {
+      a.style.color = a.getAttribute('href') === '#' + current ? 'var(--accent)' : '';
+    });
+  });
+
+  // Hero entrance animation
+  document.querySelector('.hero-content').style.opacity = '0';
+  document.querySelector('.hero-content').style.transform = 'translateY(40px)';
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      const h = document.querySelector('.hero-content');
+      h.style.transition = 'opacity 1s cubic-bezier(0.22,1,0.36,1), transform 1s cubic-bezier(0.22,1,0.36,1)';
+      h.style.opacity = '1';
+      h.style.transform = 'translateY(0)';
+    }, 150);
+  });
+</script>
+</body>
+</html>
